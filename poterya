@@ -1,0 +1,114 @@
+```java
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
+public class Main {
+
+    private static final int NUMBER = 21;
+    private static final int THREE = 3;
+    private static final int SEVEN = 7;
+    private static final int NO_RESULT = -1;
+    private static final int MAX_VALUE = Integer.MAX_VALUE;
+
+    private static final String PATH = "C:\\Users\\Admin\\Downloads\\Посл поиск.txt";
+
+    public static void main(String[] args) {
+        File inputFile = new File(PATH);
+
+        if (!inputFile.exists()) {
+            System.out.println("Файл не найден: " + inputFile.getAbsolutePath());
+            return;
+        }
+
+        if (!inputFile.isFile()) {
+            System.out.println("Указанный путь не является файлом.");
+            return;
+        }
+
+        try (Scanner reader = new Scanner(inputFile, StandardCharsets.UTF_8)) {
+
+            if (!reader.hasNextInt()) {
+                System.out.println("Файл не содержит количество элементов.");
+                return;
+            }
+
+            int count = reader.nextInt();
+
+            if (count <= 0) {
+                System.out.println("Количество элементов должно быть положительным.");
+                return;
+            }
+
+            int[] numbers = new int[count];
+
+            for (int i = 0; i < count; i++) {
+                if (!reader.hasNextInt()) {
+                    System.out.println("Недостаточно чисел в файле.");
+                    return;
+                }
+
+                numbers[i] = reader.nextInt();
+            }
+
+            int answer = findMinProduct(numbers);
+
+            if (answer == NO_RESULT) {
+                System.out.println("Подходящее произведение не найдено.");
+            } else {
+                System.out.println("Минимальное произведение, кратное 21: " + answer);
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Не удалось найти файл: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Ошибка чтения файла: " + e.getMessage());
+        }
+    }
+
+    public static int findMinProduct(int[] numbers) {
+        int minNumber = MAX_VALUE;
+        int minThree = MAX_VALUE;
+        int minSeven = MAX_VALUE;
+        int minTwentyOne = MAX_VALUE;
+        int product = MAX_VALUE;
+
+        for (int number : numbers) {
+
+            if (minTwentyOne != MAX_VALUE) {
+                product = Math.min(product, number * minTwentyOne);
+            }
+
+            if (number % NUMBER == 0 && minNumber != MAX_VALUE) {
+                product = Math.min(product, number * minNumber);
+            }
+
+            if (number % THREE == 0 && minSeven != MAX_VALUE) {
+                product = Math.min(product, number * minSeven);
+            }
+
+            if (number % SEVEN == 0 && minThree != MAX_VALUE) {
+                product = Math.min(product, number * minThree);
+            }
+
+            minNumber = Math.min(minNumber, number);
+
+            if (number % NUMBER == 0) {
+                minTwentyOne = Math.min(minTwentyOne, number);
+            }
+
+            if (number % THREE == 0) {
+                minThree = Math.min(minThree, number);
+            }
+
+            if (number % SEVEN == 0) {
+                minSeven = Math.min(minSeven, number);
+            }
+        }
+
+        return product == MAX_VALUE ? NO_RESULT : product;
+    }
+}
+```
